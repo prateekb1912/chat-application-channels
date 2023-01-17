@@ -9,16 +9,23 @@
 <body>
     <h1> Chat here! </h1>
 
-    <script type="text/javascript">
-        let url = `ws://${window.location.host}/ws/socket-server/`
+    <form action="" id="roomForm">
+        <input type="text" id="roomInput"><br>
+        <input type="submit" id="roomSubmit" value="Enter">    
+    </form>
 
-        const socket = new WebSocket(url)
+    <script>
 
-        socket.onmessage = (e) => {
-            let data = JSON.parse(e.data)
-            console.log('Data: ', data)
-        }
+        const roomForm = document.getElementById('roomForm');
 
+        roomForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            let roomName = e.target.roomInput.value.trim();
+
+            window.location.pathname = `/chat/${roomName}/`;
+        });
+        
     </script>
 </body>
 </html>
