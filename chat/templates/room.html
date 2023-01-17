@@ -18,7 +18,7 @@
 
 <script>
     const roomName = JSON.parse(document.getElementById('roomName').textContent);
-    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/socket-server/`);
+    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
     const chatLogs = document.getElementById('chatLogs');
     const chatForm = document.getElementById('chatForm');
     const messageInput = document.getElementById('messageInput');
