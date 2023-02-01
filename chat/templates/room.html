@@ -25,7 +25,7 @@
 
     chatSocket.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        chatLogs.value += (data.message + '\n');
+        chatLogs.value += (data.from + ': ' + data.message + '\n');
     }
 
     chatSocket.onclose = (e) => {
