@@ -7,5 +7,4 @@ class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'[{self.type}] {self.user.username}: {self.content}'
-
+        return f'{self.user.username}: {self.content}'
