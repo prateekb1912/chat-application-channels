@@ -8,3 +8,10 @@ class Message(models.Model):
 
     def __str__(self):
         return f'{self.user.username}: {self.content}'
+
+class FlagQuestion(models.Model):
+    flag_url = models.URLField()
+    correct_op = models.CharField(max_length=64)
+    incorrect_op1 = models.CharField(max_length=64)
+    incorrect_op2 = models.CharField(max_length=64)
+    incorrect_op3 = models.CharField(max_length=64)
