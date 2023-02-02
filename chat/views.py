@@ -1,6 +1,6 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.contrib import messages
 # Create your views here.
@@ -14,7 +14,10 @@ def register_user(request):
                 messages.success(request, "Registration successful." )
                 
                 return redirect('index')
-            messages.error(request, "Unsuccessful registration. Invalid information.")
+            else:
+                for error in form.errors.values():
+                    print(error)
+                    messages.error(request, error)
 
         form = UserCreationForm()
         context = {'register_form': form}
@@ -42,7 +45,7 @@ def login_user(request):
     context = {'login_form': form}
 
     return render(request, 'registration/login.html', context)
-
+@login_required(login_url='login')
 def index(request):
     return render(request, 'lobby.html')
 
