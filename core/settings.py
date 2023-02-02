@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'chat',
-    'quiz',
 ]
 
 ASGI_APPLICATION = 'core.asgi.application'
