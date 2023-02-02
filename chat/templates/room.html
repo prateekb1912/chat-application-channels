@@ -25,11 +25,19 @@
 
     chatSocket.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        chatLogs.value += (data.from + ': ' + data.message + '\n');
+        if(data.type == 'chat')
+            chatLogs.value += (data.from + ': ' + data.message + '\n');
+        else
+        {
+            chatLogs.value += (data.from + ': ' + data.flag_url);
+        }
     }
 
     chatSocket.onclose = (e) => {
         console.error("Chat socket closed");
+        const data = JSON.parse(e.data);
+
+        chatLogs.value += (data.from + ': ' + data.message);
     }
 
     chatForm.addEventListener('submit', (e) => {

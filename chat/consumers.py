@@ -4,6 +4,8 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import SyncConsumer, WebsocketConsumer
 
 from .models import Message
+from .tasks import get_question
+
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
@@ -27,6 +29,8 @@ class ChatConsumer(WebsocketConsumer):
 
         message = Message.objects.create(user=self.user, content=message_data)
 
+        get_question.delay(self.channel_name)
+
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name, {'type':'chat_message', 'message': message.content, 'user': message.user.username}
         )
@@ -36,9 +40,20 @@ class ChatConsumer(WebsocketConsumer):
         sender = event['user']
 
         self.send(text_data=json.dumps({
+            'type': 'chat',
             'from': sender,
             'message': message
             }))
+    
+    def question_message(self, event):
+        flag_url = event['flag']
+        options = event['options']
+
+        self.send(text_data=json.dumps({
+            'type': 'question',
+            'from': 'Server',
+            'flag_url': flag_url,
+        }))
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_add)(
