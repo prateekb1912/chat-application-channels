@@ -16,7 +16,6 @@ def register_user(request):
                 return redirect('index')
             else:
                 for error in form.errors.values():
-                    print(error)
                     messages.error(request, error)
 
         form = UserCreationForm()
@@ -45,9 +44,11 @@ def login_user(request):
     context = {'login_form': form}
 
     return render(request, 'registration/login.html', context)
+    
 @login_required(login_url='login')
 def index(request):
     return render(request, 'lobby.html')
 
+@login_required(login_url='login')
 def room(request, room_name):
     return render(request, 'room.html', {'room_name': room_name})
