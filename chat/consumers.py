@@ -29,7 +29,7 @@ class ChatConsumer(WebsocketConsumer):
 
         message = Message.objects.create(user=self.user, content=message_data)
 
-        get_question.delay(self.channel_name)
+        get_question.delay(self.room_group_name)
 
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name, {'type':'chat_message', 'message': message.content, 'user': message.user.username}

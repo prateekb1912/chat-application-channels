@@ -7,8 +7,7 @@
     <title> Chat Room </title>
 </head>
 <body>
-    <textarea name="" id="chatLogs" cols="100" rows="20"></textarea><br>
-    
+    <div id="chatArea"></div> 
     <form action="" id="chatForm">
         <input type="text" id="messageInput"><br>
         <input type="submit" id="messageSubmit">
@@ -19,17 +18,23 @@
 <script>
     const roomName = JSON.parse(document.getElementById('roomName').textContent);
     const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
-    const chatLogs = document.getElementById('chatLogs');
+    const chatArea = document.getElementById('chatArea');
     const chatForm = document.getElementById('chatForm');
     const messageInput = document.getElementById('messageInput');
 
     chatSocket.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        if(data.type == 'chat')
-            chatLogs.value += (data.from + ': ' + data.message + '\n');
+        if(data.type == 'chat') {
+            var para = document.createElement('p');
+            para.innerHTML += `${data.from}: ${data.message}\n`;
+            chatArea.appendChild(para);
+        }
         else
         {
-            chatLogs.value += (data.from + ': ' + data.flag_url);
+            var img = document.createElement('img');
+            img.src = data.flag_url;
+
+            chatArea.appendChild(img);
         }
     }
 

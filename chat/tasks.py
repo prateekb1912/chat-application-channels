@@ -10,7 +10,7 @@ from .models import FlagQuestion
 channel_layer = get_channel_layer()
 
 @shared_task
-def get_question(channel_name):
+def get_question(group_name):
     resp = requests.get('https://restcountries.com/v3.1/all')
     countries = resp.json()
 
@@ -26,10 +26,10 @@ def get_question(channel_name):
     new_question.save()
 
 
-    async_to_sync(channel_layer.send)(
-        channel_name,
+    async_to_sync(channel_layer.group_send)(
+        group_name,
         {
-            "type": "question.message",
+            "type": "question_message",
             "flag": question_flag,
             "options": [names, correct_name]
         },
