@@ -29,14 +29,35 @@
             para.innerHTML += `${data.from}: ${data.message}\n`;
             chatArea.appendChild(para);
         }
-        else
+        else if (data.type == 'question')
         {
             var img = document.createElement('img');
             img.src = data.flag_url;
 
             chatArea.appendChild(img);
+
+            var optionForm = document.createElement('fieldset');
+            var options = data.options;
+
+            options.forEach((option)=>{
+                var optionNode = document.createElement('input');
+                optionNode.type = 'radio';
+                optionNode.name = 'option';
+                optionNode.id = option;
+
+                var label = document.createElement('label');
+                label.htmlFor = option;
+
+                label.innerText = option;
+
+                optionForm.appendChild(optionNode);
+                optionForm.appendChild(label);
+            });
+
+            chatArea.appendChild(optionForm);
         }
     }
+
 
     chatSocket.onclose = (e) => {
         console.error("Chat socket closed");

@@ -53,6 +53,7 @@ class ChatConsumer(WebsocketConsumer):
             'type': 'question',
             'from': 'Server',
             'flag_url': flag_url,
+            'options': options
         }))
 
     def disconnect(self, code):
