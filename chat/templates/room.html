@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,68 +17,6 @@
     {{ room_name|json_script:"roomName" }}
 </body>
 
-<script>
-    const roomName = JSON.parse(document.getElementById('roomName').textContent);
-    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
-    const chatArea = document.getElementById('chatArea');
-    const chatForm = document.getElementById('chatForm');
-    const messageInput = document.getElementById('messageInput');
-
-    chatSocket.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        if(data.type == 'chat') {
-            var para = document.createElement('p');
-            para.innerHTML += `${data.from}: ${data.message}\n`;
-            chatArea.appendChild(para);
-        }
-        else if (data.type == 'question')
-        {
-            var img = document.createElement('img');
-            img.src = data.flag_url;
-
-            chatArea.appendChild(img);
-
-            var optionForm = document.createElement('fieldset');
-            var options = data.options;
-
-            options.forEach((option)=>{
-                var optionNode = document.createElement('input');
-                optionNode.type = 'radio';
-                optionNode.name = 'option';
-                optionNode.id = option;
-
-                var label = document.createElement('label');
-                label.htmlFor = option;
-
-                label.innerText = option;
-
-                optionForm.appendChild(optionNode);
-                optionForm.appendChild(label);
-            });
-
-            chatArea.appendChild(optionForm);
-        }
-    }
-
-
-    chatSocket.onclose = (e) => {
-        console.error("Chat socket closed");
-        const data = JSON.parse(e.data);
-
-        chatLogs.value += (data.from + ': ' + data.message);
-    }
-
-    chatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            let message = e.target.messageInput.value.trim();
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-
-            messageInput.value = "";
-        });
-
-</script>
+<script src="{% static 'js/room.js' %}"> </script>
 
 </html>

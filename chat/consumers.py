@@ -49,6 +49,8 @@ class ChatConsumer(WebsocketConsumer):
         flag_url = event['flag']
         options = event['options']
 
+        print(options)
+
         self.send(text_data=json.dumps({
             'type': 'question',
             'from': 'Server',

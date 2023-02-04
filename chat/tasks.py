@@ -25,11 +25,16 @@ def get_question(group_name):
     new_question = FlagQuestion.objects.create(flag_url=question_flag, correct_op=correct_name, incorrect_op1 = names[0], incorrect_op2 = names[1], incorrect_op3 = names[2])
     new_question.save()
 
+    options = [*names, correct_name]
+    random.shuffle(options)
+
+    print(options)
+
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
             "type": "question_message",
             "flag": question_flag,
-            "options": [*names, correct_name]
+            "options": options
         },
     )
