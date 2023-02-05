@@ -28,8 +28,6 @@ def get_question(group_name):
     options = [*names, correct_name]
     random.shuffle(options)
 
-    print(options)
-
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
@@ -37,4 +35,28 @@ def get_question(group_name):
             "flag": question_flag,
             "options": options
         },
+    )
+
+    return correct_name
+
+@shared_task
+def analyze_response(group_name, response, question):
+    print(question)
+
+    message = ""
+
+    if question == response:
+        message = "Correct Answer"
+    else:
+        message = "Booo! Wrong."
+    
+    print(message)
+
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            "type": "chat_message",
+            "user": "Server",
+            "message": message
+        }
     )

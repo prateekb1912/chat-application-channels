@@ -27,14 +27,15 @@ chatSocket.onmessage = (e) => {
 
         questionDiv.appendChild(img);
 
-        var optionForm = document.createElement('fieldset');
+        var optionForm = document.createElement('form');
+        optionForm.id = 'questionForm';
         var options = data.options;
 
         options.forEach((option)=>{
             var optionNode = document.createElement('input');
             optionNode.type = 'radio';
             optionNode.name = 'option';
-            optionNode.id = option;
+            optionNode.value = option;
 
             var label = document.createElement('label');
             label.htmlFor = option;
@@ -45,10 +46,33 @@ chatSocket.onmessage = (e) => {
             optionForm.appendChild(label);
         });
 
-        questionDiv.appendChild(optionForm);
+        var submitAns = document.createElement('input');
+        submitAns.type = 'submit';
+        submitAns.id = 'submitAnwer';
 
+        optionForm.appendChild(submitAns);
+
+        optionForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            var options = document.getElementsByName('option');
+        
+            options.forEach((opt) => {
+                if(opt.checked)
+                    chatSocket.send(JSON.stringify({
+                        'type': 'response',
+                        'value': opt.value
+                    }));
+            })
+        });
+
+        questionDiv.appendChild(optionForm);
         chatArea.appendChild(questionDiv);
     }
+}
+
+function submitResponse(e) {
+
 }
 
 chatForm.addEventListener('submit', (e) => {
@@ -56,6 +80,7 @@ chatForm.addEventListener('submit', (e) => {
 
         let message = e.target.messageInput.value.trim();
         chatSocket.send(JSON.stringify({
+            'type': 'message',
             'message': message
         }));
 
