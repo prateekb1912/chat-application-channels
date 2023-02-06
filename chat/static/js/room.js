@@ -6,6 +6,8 @@ const messageInput = document.getElementById('messageInput');
 
 chatSocket.onmessage = (e) => {
     const data = JSON.parse(e.data);
+    console.log(data)
+    
     if(data.type == 'chat') {
         var para = document.createElement('p');
         para.innerHTML += `${data.from}: ${data.message}\n`;
@@ -14,7 +16,6 @@ chatSocket.onmessage = (e) => {
     else if (data.type == 'question')
     {
         var previousQues = document.getElementsByClassName('question');
-        console.log(previousQues);
         if(previousQues.length > 0) {
             previousQues[0].remove();
         }
@@ -69,10 +70,14 @@ chatSocket.onmessage = (e) => {
         questionDiv.appendChild(optionForm);
         chatArea.appendChild(questionDiv);
     }
-}
 
-function submitResponse(e) {
+    else if (data.type == 'score_update') {
+        console.log("Hi there Hello");
+        const pointsSpan = document.getElementById('score');
+        pointsSpan.innerHTML = "";
+        pointsSpan.innerHTML += `${data.correct}/${data.questions}`;
 
+    }
 }
 
 chatForm.addEventListener('submit', (e) => {

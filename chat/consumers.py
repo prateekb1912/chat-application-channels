@@ -10,12 +10,13 @@ from .tasks import get_question, analyze_response
 
 
 class ChatConsumer(WebsocketConsumer):
+    question_id = None
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'chat_{self.room_name}'
         self.user = self.scope['user']
-        self.question_id = None
-
+        self.total_questions = 0
+        self.score = 0
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name, self.channel_name
@@ -25,8 +26,9 @@ class ChatConsumer(WebsocketConsumer):
     
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
+        print(text_data_json)
         if text_data_json['type'] == 'message':
-            self.question_id = get_question.delay(self.room_group_name)
+            ChatConsumer.question_id = get_question.delay(self.room_group_name)
             message_data = text_data_json['message']
 
             message = Message.objects.create(user=self.user, content=message_data)
@@ -35,7 +37,7 @@ class ChatConsumer(WebsocketConsumer):
             )
 
         elif text_data_json['type'] == 'response':
-            analyze_response.delay(self.room_group_name, text_data_json['value'], self.question_id.get())
+            analyze_response.delay(self.channel_name, text_data_json['value'], ChatConsumer.question_id.get())
             
     
     def chat_message(self, event):
@@ -57,6 +59,20 @@ class ChatConsumer(WebsocketConsumer):
             'from': 'Server',
             'flag_url': flag_url,
             'options': options
+        }))
+
+    def score_update(self, event):
+        print("DJJHJD")
+        response_status = event['correct']
+        self.total_questions += 1
+        self.score += int(response_status)
+
+        print(f"{self.score}/{self.total_questions}")
+
+        self.send(text_data=json.dumps({
+            'type': 'score_update',
+            'questions': self.total_questions,
+            'correct': self.score
         }))
 
     def disconnect(self, code):

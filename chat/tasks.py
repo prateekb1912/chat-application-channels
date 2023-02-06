@@ -40,10 +40,9 @@ def get_question(group_name):
     return correct_name
 
 @shared_task
-def analyze_response(group_name, response, question):
-    print(question)
-
+def analyze_response(channel_name, response, question):
     message = ""
+
 
     if question == response:
         message = "Correct Answer"
@@ -52,11 +51,21 @@ def analyze_response(group_name, response, question):
     
     print(message)
 
-    async_to_sync(channel_layer.group_send)(
-        group_name,
+    async_to_sync(channel_layer.send)(
+        channel_name,
         {
             "type": "chat_message",
             "user": "Server",
             "message": message
+        }
+    )
+
+    print("HELLOOOOO")
+
+    async_to_sync(channel_layer.send)(
+        channel_name,
+        {
+            'type': 'score_update',
+            'correct': question == response
         }
     )
